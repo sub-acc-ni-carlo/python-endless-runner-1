@@ -71,8 +71,6 @@ class Player(pygame.sprite.Sprite):
             # increment the sprite index by 0.2
             # so it takes 5 frames to get to the next index
             self.sprites['running_animation']['index'] += 0.2
-
-            print(self.sprites['running_animation']['index'])
             
             # go back to index 0 after the last sprite image is drawn
             if self.sprites['running_animation']['index'] >= len(self.sprites['running_animation']['animation']):

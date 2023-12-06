@@ -2,8 +2,6 @@ import pygame
 from pygame.locals import *
 import random
 import math
-
-# refactored modules.
 from assets import background_assets
 from player import Player
 from obstacle import Obstacle
@@ -26,8 +24,8 @@ for x in range(len(background_assets(pygame))):
 # create the player
 player_width, player_height = 105, 105
 player_x_pos, player_y_pos = 25, WINDOW_HEIGHT - player_height
-player = Player(player_x_pos, player_y_pos, player_width, player_height, 2)
-player.add_sprite(Sprite('running_animation', [
+player = Player(player_x_pos, player_y_pos, player_width, player_height, 1.7)
+player.add_sprite(Sprite("running_animation", [
         pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_1.png').convert_alpha(), (player_width, player_height)),
         pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_2.png').convert_alpha(), (player_width, player_height)),
         pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_3.png').convert_alpha(), (player_width, player_height)),
@@ -46,7 +44,7 @@ player.add_sprite(Sprite("jumping_animation", [
 
 # create the obstacle
 obstacles_group = pygame.sprite.Group()
-obstacle = Obstacle()
+obstacle = Obstacle(73, 73, 10)
 obstacles_group.add(obstacle)
 
 projectile_group = pygame.sprite.Group()
@@ -69,6 +67,7 @@ for i in range(8):
 clock = pygame.time.Clock()
 start_time = pygame.time.get_ticks()
 quit = False
+pause = False
 while not quit:
     
     clock.tick(FPS)
@@ -89,7 +88,7 @@ while not quit:
         # press key 'A' to walk forward
         if event.type == KEYDOWN and event.key == K_a:
             player.set_action('walk_backward')
-                 
+            
     # loads the background
     background_manager(
         game,                           # pygame display
@@ -122,11 +121,6 @@ while not quit:
         obstacle.reset()
         speed += 1
 
-   
-    if projectile.x <= 0:
-        projectile.reset()
-        speed += 1
-    
     current_time = pygame.time.get_ticks()
     elapsed_time = (current_time - start_time) // 1000  # Convert to seconds
     score = elapsed_time
@@ -138,7 +132,7 @@ while not quit:
         
         # remove obstacle and replace with a new one
         obstacles_group.remove(obstacle)
-        obstacle = Obstacle()
+        obstacle = Obstacle(73, 73, 10)
         obstacles_group.add(obstacle)
     
     if pygame.sprite.spritecollide(player, projectile_group, True, pygame.sprite.collide_mask):
@@ -165,22 +159,43 @@ while not quit:
         heart_sprite_index = 0
         
     # display the score
-    black = (0, 0, 0)
-    font = pygame.font.Font(pygame.font.get_default_font(), 16)
-    text = font.render(f'Score: {score}', True, black)
+    black = (255, 255, 255)
+    font = pygame.font.Font("PixelGameFont.ttf", 16)
+    text = font.render(f'SCORE: {score}', True, black)
     text_rect = text.get_rect()
     text_rect.center = (WINDOW_WIDTH - 50, 20)
     game.blit(text, text_rect)
             
     pygame.display.update()
-    
+
+    while pause:
+
+        pause_color = (0, 255, 0)
+        pygame.draw.rect(game, pause_color, (0, 50, WINDOW_WIDTH, 100))
+        font = pygame.font.Font(pygame.font.get_default_font(), 16)
+        text = font.render('Game is paused. Press P to continue...', True, black)
+        text_rect = text.get_rect()
+        text_rect.center = (WINDOW_WIDTH / 2, 100)
+        game.blit(text, text_rect)
+
+
+        for event in pygame.event.get():
+                
+            # get the player's input (Y or N)
+            if event.type == KEYDOWN:
+                if event.key == K_p:
+                    pause = not pause
+                    
+        pygame.display.update()
+
+
     # gameover
     gameover = player.health == 0
     while gameover and not quit:
         
         # display game over message
-        red = (255, 0, 0)
-        pygame.draw.rect(game, red, (0, 50, WINDOW_WIDTH, 100))
+        game_over_color = (0, 0, 0)
+        pygame.draw.rect(game, game_over_color, (0, 50, WINDOW_WIDTH, 100))
         font = pygame.font.Font(pygame.font.get_default_font(), 16)
         text = font.render('Game over. Play again? (Enter Y or N)', True, black)
         text_rect = text.get_rect()
