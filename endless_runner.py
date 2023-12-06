@@ -27,14 +27,14 @@ player_width, player_height = 105, 105
 player_x_pos, player_y_pos = 25, WINDOW_HEIGHT - player_height
 player = Player(player_x_pos, player_y_pos, player_width, player_height, 1.6)
 player.add_sprite(Sprite("running_animation", [
-        pygame.transform.scale(pygame.image.load('images/player/run_animation/student_run_1.png').convert_alpha(), (player_width, player_height)),
-        pygame.transform.scale(pygame.image.load('images/player/run_animation/student_run_2.png').convert_alpha(), (player_width, player_height)),
-        pygame.transform.scale(pygame.image.load('images/player/run_animation/student_run_3.png').convert_alpha(), (player_width, player_height)),
-        pygame.transform.scale(pygame.image.load('images/player/run_animation/student_run_4.png').convert_alpha(), (player_width, player_height)),
-        pygame.transform.scale(pygame.image.load('images/player/run_animation/student_run_5.png').convert_alpha(), (player_width, player_height)),
-        pygame.transform.scale(pygame.image.load('images/player/run_animation/student_run_6.png').convert_alpha(), (player_width, player_height)),
-        pygame.transform.scale(pygame.image.load('images/player/run_animation/student_run_7.png').convert_alpha(), (player_width, player_height)),
-        pygame.transform.scale(pygame.image.load('images/player/run_animation/student_run_8.png').convert_alpha(), (player_width, player_height)),
+        pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_1.png').convert_alpha(), (player_width, player_height)),
+        pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_2.png').convert_alpha(), (player_width, player_height)),
+        pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_3.png').convert_alpha(), (player_width, player_height)),
+        pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_4.png').convert_alpha(), (player_width, player_height)),
+        pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_5.png').convert_alpha(), (player_width, player_height)),
+        pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_6.png').convert_alpha(), (player_width, player_height)),
+        pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_7.png').convert_alpha(), (player_width, player_height)),
+        pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_8.png').convert_alpha(), (player_width, player_height)),
 ]))
 
 player.add_sprite(Sprite("jumping_animation", [
