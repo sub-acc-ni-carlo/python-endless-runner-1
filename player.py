@@ -4,60 +4,36 @@ from window import pygame
 
 
 class Player(pygame.sprite.Sprite): 
-    
-    def __init__(self):
+
+
+    def __init__(self, x, y, width, height):
         
         pygame.sprite.Sprite.__init__(self)
-        
-        self.height = 150
-        self.x = 25
-        self.y = game_height - self.height
+        self.sprites = {}
+        self.height = height
+        self.x = x
+        self.y = y
         self.action = 'running'
         self.health = 5
-        # load the running sprites
-        self.running_sprites = []
-        self.running_sprite_index = 0
-        for i in range(10):
-            running_sprite = pygame.image.load(f'images/running/run{i}.png').convert_alpha()
-            scale = self.height / running_sprite.get_height()
-            new_width = running_sprite.get_width() * scale
-            new_height = running_sprite.get_height() * scale
-            running_sprite = pygame.transform.scale(running_sprite, (new_width, new_height))
-            self.running_sprites.append(running_sprite)
-            
-        # load the jumping sprites
-        self.jumping_sprites = []
-        self.jumping_sprite_index = 0
-        for i in range(10):
-            jumping_sprite = pygame.image.load(f'images/jumping/jump{i}.png').convert_alpha()
-            scale = self.height / jumping_sprite.get_height()
-            new_width = jumping_sprite.get_width() * scale
-            new_height = jumping_sprite.get_height() * scale
-            jumping_sprite = pygame.transform.scale(jumping_sprite, (new_width, new_height))
-            self.jumping_sprites.append(jumping_sprite)
-            
-        # set the initial sprite rect
-        self.rect = self.running_sprites[self.running_sprite_index].get_rect()
-        self.rect.x = self.x
-        self.rect.y = self.y
-        
+
         # number of frames player is invincible after getting hurt
         self.invincibility_frame = 0
+
         
     def draw(self):
         ''' draw the sprite based on the character action and index '''
         
         if self.action == 'running':
-            running_sprite = self.running_sprites[int(self.running_sprite_index)]
+            running_sprite = self.sprites['running_animation']['animation'][int(self.sprites['running_animation']['index'])]
             
             # add invincibility effect when hurt
             if self.invincibility_frame > 0:
                 self.invincibility_frame -= 1
             if self.invincibility_frame % 10 == 0:
                 game.blit(running_sprite, (self.x, self.y))
-            
+
         elif self.action == 'jumping' or self.action == 'landing':
-            jumping_sprite = self.jumping_sprites[int(self.jumping_sprite_index)]
+            jumping_sprite = self.sprites["jumping_animation"]['animation'][int(self.sprites["jumping_animation"]["index"])]
             
             # add invincibility effect when hurt
             if self.invincibility_frame > 0:
@@ -65,7 +41,7 @@ class Player(pygame.sprite.Sprite):
             if self.invincibility_frame % 10 == 0:
                 game.blit(jumping_sprite, (self.x, self.y))
         elif self.action == 'walk_forward':
-            running_sprite = self.running_sprites[int(self.running_sprite_index)]
+            running_sprite = self.sprites['jumping_animation']['animation'][int(self.sprites['jumping_animation']['index'])]
             if self.invincibility_frame > 0:
                 self.invincibility_frame -= 1
             if self.invincibility_frame % 10 == 0:
@@ -75,12 +51,17 @@ class Player(pygame.sprite.Sprite):
         elif self.action == 'walk_backward':
             if self.x - 1 <= 1:
                 self.x = 1
-            running_sprite = self.running_sprites[int(self.running_sprite_index)]
+            running_sprite = self.sprites['jumping_animation']['animation'][int(self.sprites['jumping_animation']['index'])]
             if self.invincibility_frame > 0:
                 self.invincibility_frame -= 1
             if self.invincibility_frame % 10 == 0:
                 self.x -= 1
-                game.blit(running_sprite, (self.x, self.y))    
+                game.blit(running_sprite, (self.x, self.y))
+    
+
+    def add_sprite(self, sprite_object):
+        self.sprites[sprite_object.group_name] = {'animation': sprite_object.animation, 'index': sprite_object.index}
+
     def update(self):
         ''' update the sprite index so the next sprite image is drawn '''
         ''' also update the y position when jumping or landing '''
@@ -89,29 +70,31 @@ class Player(pygame.sprite.Sprite):
             
             # increment the sprite index by 0.2
             # so it takes 5 frames to get to the next index
-            self.running_sprite_index += 0.2
+            self.sprites['running_animation']['index'] += 0.2
+
+            print(self.sprites['running_animation']['index'])
             
             # go back to index 0 after the last sprite image is drawn
-            if self.running_sprite_index >= len(self.running_sprites):
-                self.running_sprite_index = 0
-                
+            if self.sprites['running_animation']['index'] >= len(self.sprites['running_animation']['animation']):
+                self.sprites['running_animation']['index'] = 0
+
             # update the rect
-            self.rect = self.running_sprites[int(self.running_sprite_index)].get_rect()
+            self.rect = self.sprites['running_animation']['animation'][int(self.sprites['running_animation']['index'])].get_rect()
             self.rect.x = self.x
             self.rect.y = self.y
-            
+
             # update the mask for collision detection
-            self.mask = pygame.mask.from_surface(self.running_sprites[int(self.running_sprite_index)])
+            self.mask = pygame.mask.from_surface(self.sprites['running_animation']['animation'][int(self.sprites['running_animation']['index'])])
             
         elif self.action == 'jumping' or self.action == 'landing':
             
-            # increment the sprite index by 0.2
+            # increment the sprite index by 0.1
             # so it takes 5 frames to get to the next index
-            self.jumping_sprite_index += 0.2
+            self.sprites['jumping_animation']['index'] += 0.05
             
             # go back to index 0 after the last sprite image is drawn
-            if self.jumping_sprite_index >= len(self.jumping_sprites):
-                self.jumping_sprite_index = 0
+            if self.sprites['jumping_animation']['index'] >= len(self.sprites['jumping_animation']['animation']):
+                self.sprites['jumping_animation']['index'] = 0
                 
             # move position up if jumping or down if landing
             if self.action == 'jumping':
@@ -127,14 +110,14 @@ class Player(pygame.sprite.Sprite):
                 # change to running when character touches the ground
                 if self.y == game_height - self.height:
                     self.action = 'running'
-                    
+
             # update the rect
-            self.rect = self.jumping_sprites[int(self.jumping_sprite_index)].get_rect()
+            self.rect = self.sprites['jumping_animation']['animation'][int(self.sprites['jumping_animation']['index'])].get_rect()
             self.rect.x = self.x
             self.rect.y = self.y
             
             # update the mask for collision detection
-            self.mask = pygame.mask.from_surface(self.jumping_sprites[int(self.jumping_sprite_index)])
+            self.mask = pygame.mask.from_surface(self.sprites['jumping_animation']['animation'][int(self.sprites['jumping_animation']['index'])])
             
     def jump(self):
         ''' make the player go to jumping action when not already jumping or landing '''
