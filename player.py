@@ -11,20 +11,21 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.sprites = {}
         self.height = height
-        self.x = x
-        self.y = y
+        self.x, self.y = x, y
         self.action = 'running'
         self.health = 5
-
         # number of frames player is invincible after getting hurt
         self.invincibility_frame = 0
-
+        
         
     def draw(self):
         ''' draw the sprite based on the character action and index '''
+
+        # one instantiaion of jump and run animation.
+        running_sprite = self.sprites['running_animation']['animation'][int(self.sprites['running_animation']['index'])]
+        jumping_sprite = self.sprites["jumping_animation"]['animation'][int(self.sprites["jumping_animation"]["index"])]
         
         if self.action == 'running':
-            running_sprite = self.sprites['running_animation']['animation'][int(self.sprites['running_animation']['index'])]
             
             # add invincibility effect when hurt
             if self.invincibility_frame > 0:
@@ -33,15 +34,14 @@ class Player(pygame.sprite.Sprite):
                 game.blit(running_sprite, (self.x, self.y))
 
         elif self.action == 'jumping' or self.action == 'landing':
-            jumping_sprite = self.sprites["jumping_animation"]['animation'][int(self.sprites["jumping_animation"]["index"])]
             
             # add invincibility effect when hurt
             if self.invincibility_frame > 0:
                 self.invincibility_frame -= 1
             if self.invincibility_frame % 10 == 0:
                 game.blit(jumping_sprite, (self.x, self.y))
+        
         elif self.action == 'walk_forward':
-            running_sprite = self.sprites['jumping_animation']['animation'][int(self.sprites['jumping_animation']['index'])]
             if self.invincibility_frame > 0:
                 self.invincibility_frame -= 1
             if self.invincibility_frame % 10 == 0:
@@ -51,13 +51,11 @@ class Player(pygame.sprite.Sprite):
         elif self.action == 'walk_backward':
             if self.x - 1 <= 1:
                 self.x = 1
-            running_sprite = self.sprites['jumping_animation']['animation'][int(self.sprites['jumping_animation']['index'])]
             if self.invincibility_frame > 0:
                 self.invincibility_frame -= 1
             if self.invincibility_frame % 10 == 0:
                 self.x -= 1
                 game.blit(running_sprite, (self.x, self.y))
-    
 
     def add_sprite(self, sprite_object):
         self.sprites[sprite_object.group_name] = {'animation': sprite_object.animation, 'index': sprite_object.index}
@@ -123,6 +121,7 @@ class Player(pygame.sprite.Sprite):
         ''' make the player go to jumping action when not already jumping or landing '''
         if self.action not in ['jumping', 'landing']:
             self.action = 'jumping'
+    
     def set_action(self, action):
         if self.action not in ['jumping', 'landing']:
             self.action = action
