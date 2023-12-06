@@ -33,6 +33,7 @@ class Player(pygame.sprite.Sprite):
                 self.invincibility_frame -= 1
             if self.invincibility_frame % 10 == 0:
                 game.blit(running_sprite, (self.x, self.y))
+                self.sprites["jumping_animation"]['index'] = 0
 
         elif self.action == 'jumping' or self.action == 'landing':
             
