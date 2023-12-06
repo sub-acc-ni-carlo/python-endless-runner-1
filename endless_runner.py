@@ -11,6 +11,7 @@ from window import game
 from config import WINDOW_HEIGHT, WINDOW_WIDTH, FPS
 from game_variables import score, speed
 from background_manager import background_manager
+from sprite import Sprite
 
 # set the image for the sky
 sky = pygame.image.load('images/bg/sky.png').convert_alpha()
@@ -20,9 +21,27 @@ num_bg_tiles = math.ceil(WINDOW_WIDTH / sky.get_width()) + 1
 parallax = []
 for x in range(len(background_assets(pygame))):
     parallax.append(0)
-    
+
 # create the player
-player = Player()
+player_width, player_height = 105, 105
+player_x_pos, player_y_pos = 25, WINDOW_HEIGHT - player_height
+player = Player(player_x_pos, player_y_pos, player_width, player_height)
+player.add_sprite(Sprite("running_animation", [
+        pygame.transform.scale(pygame.image.load('images/player/run_animation/student_run_1.png').convert_alpha(), (player_width, player_height)),
+        pygame.transform.scale(pygame.image.load('images/player/run_animation/student_run_2.png').convert_alpha(), (player_width, player_height)),
+        pygame.transform.scale(pygame.image.load('images/player/run_animation/student_run_3.png').convert_alpha(), (player_width, player_height)),
+        pygame.transform.scale(pygame.image.load('images/player/run_animation/student_run_4.png').convert_alpha(), (player_width, player_height)),
+        pygame.transform.scale(pygame.image.load('images/player/run_animation/student_run_5.png').convert_alpha(), (player_width, player_height)),
+        pygame.transform.scale(pygame.image.load('images/player/run_animation/student_run_6.png').convert_alpha(), (player_width, player_height)),
+        pygame.transform.scale(pygame.image.load('images/player/run_animation/student_run_7.png').convert_alpha(), (player_width, player_height)),
+        pygame.transform.scale(pygame.image.load('images/player/run_animation/student_run_8.png').convert_alpha(), (player_width, player_height)),
+]))
+
+player.add_sprite(Sprite("jumping_animation", [
+        pygame.transform.scale(pygame.image.load('images/player/jump_animation/student_jump1.png').convert_alpha(), (player_width, player_height)),
+        pygame.transform.scale(pygame.image.load('images/player/jump_animation/student_jump2.png').convert_alpha(), (player_width, player_height)),
+        pygame.transform.scale(pygame.image.load('images/player/jump_animation/student_jump3.png').convert_alpha(), (player_width, player_height))
+    ]))
 
 # create the obstacle
 obstacles_group = pygame.sprite.Group()
