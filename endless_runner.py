@@ -87,10 +87,10 @@ while not quit:
             
     # loads the background
     background_manager(
-        game,     # pygame display
-        parallax, # array of assets in the background
-        background_assets(pygame),      # images o
-        sky
+        game,                           # pygame display
+        parallax,                       # array of assets in the background
+        background_assets(pygame),      # images object
+        sky                             # sky
     )
             
     # draw the player
