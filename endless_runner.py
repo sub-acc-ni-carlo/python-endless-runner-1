@@ -223,6 +223,7 @@ while not quit:
                     projectile_group.empty()
                     obstacles_group.add([projectile])
                 elif event.key == K_n:
+                    pygame.mixer.music.stop()
                     quit = True
                     
         pygame.display.update()
