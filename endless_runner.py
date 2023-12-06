@@ -7,6 +7,7 @@ import math
 from assets import background_assets
 from player import Player
 from obstacle import Obstacle
+from projectile import Projectile
 from window import game
 from config import WINDOW_HEIGHT, WINDOW_WIDTH, FPS
 from game_variables import score, speed
@@ -25,8 +26,8 @@ for x in range(len(background_assets(pygame))):
 # create the player
 player_width, player_height = 105, 105
 player_x_pos, player_y_pos = 25, WINDOW_HEIGHT - player_height
-player = Player(player_x_pos, player_y_pos, player_width, player_height, 1.6)
-player.add_sprite(Sprite("running_animation", [
+player = Player(player_x_pos, player_y_pos, player_width, player_height, 2)
+player.add_sprite(Sprite('running_animation', [
         pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_1.png').convert_alpha(), (player_width, player_height)),
         pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_2.png').convert_alpha(), (player_width, player_height)),
         pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_3.png').convert_alpha(), (player_width, player_height)),
@@ -47,6 +48,10 @@ player.add_sprite(Sprite("jumping_animation", [
 obstacles_group = pygame.sprite.Group()
 obstacle = Obstacle()
 obstacles_group.add(obstacle)
+
+projectile_group = pygame.sprite.Group()
+projectile = Projectile()
+projectile_group.add(projectile)
 
 # load the heart images for representing health
 heart_sprites = []
@@ -84,7 +89,7 @@ while not quit:
         # press key 'A' to walk forward
         if event.type == KEYDOWN and event.key == K_a:
             player.set_action('walk_backward')
-            
+                 
     # loads the background
     background_manager(
         game,                           # pygame display
@@ -92,7 +97,9 @@ while not quit:
         background_assets(pygame),      # images object
         sky                             # sky
     )
-            
+    if score > 3:
+        projectile.draw()
+        projectile.update()
     # draw the player
     player.draw()
     
@@ -102,14 +109,24 @@ while not quit:
     # draw the obstacle
     obstacle.draw()
     
+    if score >= 5 and obstacle.x in [0, 50, 150, 250]:
+        projectile.draw()
+       
     # update the position of the obstacle
     obstacle.update()
     
+    
+
     #reset the obstacle
     if obstacle.x <= 0:
         obstacle.reset()
         speed += 1
 
+   
+    if projectile.x <= 0:
+        projectile.reset()
+        speed += 1
+    
     current_time = pygame.time.get_ticks()
     elapsed_time = (current_time - start_time) // 1000  # Convert to seconds
     score = elapsed_time
@@ -123,7 +140,15 @@ while not quit:
         obstacles_group.remove(obstacle)
         obstacle = Obstacle()
         obstacles_group.add(obstacle)
+    
+    if pygame.sprite.spritecollide(player, projectile_group, True, pygame.sprite.collide_mask):
+        player.health -= 1
+        player.invincibility_frame = 30
         
+        # remove projectile and replace with a new one
+        projectile_group.remove(projectile)
+        projectile = Projectile()
+        projectile_group.add(projectile)    
     # display a heart per remaining health
     for life in range(player.health):
         heart_sprite = heart_sprites[int(heart_sprite_index)]
@@ -174,10 +199,29 @@ while not quit:
                     gameover = False
                     speed = 3
                     score = 0
-                    player = Player()
+                    player = Player(player_x_pos, player_y_pos, player_width, player_height, 1.6)
+                    player.add_sprite(Sprite('running_animation', [
+                    pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_1.png').convert_alpha(), (player_width, player_height)),
+                    pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_2.png').convert_alpha(), (player_width, player_height)),
+                    pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_3.png').convert_alpha(), (player_width, player_height)),
+                    pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_4.png').convert_alpha(), (player_width, player_height)),
+                    pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_5.png').convert_alpha(), (player_width, player_height)),
+                    pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_6.png').convert_alpha(), (player_width, player_height)),
+                    pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_7.png').convert_alpha(), (player_width, player_height)),
+                    pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_8.png').convert_alpha(), (player_width, player_height)),
+                    ]))
+
+                    player.add_sprite(Sprite("jumping_animation", [
+                    pygame.transform.scale(pygame.image.load('images/player/jump_animation/student_jump1.png').convert_alpha(), (player_width, player_height)),
+                    pygame.transform.scale(pygame.image.load('images/player/jump_animation/student_jump2.png').convert_alpha(), (player_width, player_height)),
+                    pygame.transform.scale(pygame.image.load('images/player/jump_animation/student_jump3.png').convert_alpha(), (player_width, player_height))
+                    ]))
                     obstacle = Obstacle()
                     obstacles_group.empty()
                     obstacles_group.add(obstacle)
+                    projectile = Projectile()
+                    projectile_group.empty()
+                    obstacles_group.add([projectile])
                 elif event.key == K_n:
                     quit = True
                     
