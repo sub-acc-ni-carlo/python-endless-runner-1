@@ -6,17 +6,18 @@ from window import pygame
 class Player(pygame.sprite.Sprite): 
 
 
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height, jump_height=1.5):
         
         pygame.sprite.Sprite.__init__(self)
         self.sprites = {}
         self.height = height
         self.x, self.y = x, y
+        self.jump_height = jump_height
         self.action = 'running'
         self.health = 5
         # number of frames player is invincible after getting hurt
         self.invincibility_frame = 0
-        
+
         
     def draw(self):
         ''' draw the sprite based on the character action and index '''
@@ -96,14 +97,14 @@ class Player(pygame.sprite.Sprite):
                 
             # move position up if jumping or down if landing
             if self.action == 'jumping':
-                self.y -= 2
+                self.y -= 3
                 
                 # change to landing when peak of jump is reached
-                if self.y <= game_height - self.height * 1.5:
+                if self.y <= game_height - self.height * self.jump_height:
                     self.action = 'landing'
                     
             elif self.action == 'landing':
-                self.y += 2
+                self.y += 3
                 
                 # change to running when character touches the ground
                 if self.y == game_height - self.height:
