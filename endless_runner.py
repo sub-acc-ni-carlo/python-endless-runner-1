@@ -24,7 +24,7 @@ for x in range(len(background_assets(pygame))):
 # create the player
 player_width, player_height = 105, 105
 player_x_pos, player_y_pos = 25, WINDOW_HEIGHT - player_height
-player = Player(player_x_pos, player_y_pos, player_width, player_height, 1.7)
+player = Player(player_x_pos, player_y_pos, player_width, player_height, 2)
 player.add_sprite(Sprite("running_animation", [
         pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_1.png').convert_alpha(), (player_width, player_height)),
         pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_2.png').convert_alpha(), (player_width, player_height)),
@@ -113,7 +113,7 @@ while not quit:
         background_assets(pygame),      # images object
         sky                             # sky
     )
-    if score > 3:
+    if score > 5:
         projectile.draw()
         projectile.update()
     # draw the player
@@ -125,14 +125,18 @@ while not quit:
     # draw the obstacle
     obstacle.draw()
     
-    if score >= 5 and obstacle.x in [0, 50, 150, 250]:
+    if score > 5 and obstacle.x in [0, 50, 150, 250, 350, 450, 750, 850]:
         projectile.draw()
+        print('projectile created')
        
     # update the position of the obstacle
     obstacle.update()
     
-    
-
+    #print(obstacle.x)
+    #reset the obstacle
+    if projectile.x <= 0:
+        projectile.reset()
+        speed += 1
     #reset the obstacle
     if obstacle.x <= 0:
         obstacle.reset()
@@ -153,10 +157,15 @@ while not quit:
         obstacles_group.add(obstacle)
     
     if pygame.sprite.spritecollide(player, projectile_group, True, pygame.sprite.collide_mask):
-        player.health -= 1
         player.invincibility_frame = 30
-        
+
         # remove projectile and replace with a new one
+        if projectile.type == 'book':
+            player.health += 1
+        else:
+            player.health -= 1
+        projectile.type = ''
+        projectile.image_name = ''
         projectile_group.remove(projectile)
         projectile = Projectile()
         projectile_group.add(projectile)    
@@ -231,7 +240,7 @@ while not quit:
                     gameover = False
                     speed = 3
                     score = 0
-                    player = Player(player_x_pos, player_y_pos, player_width, player_height, 1.6)
+                    player = Player(player_x_pos, player_y_pos, player_width, player_height, 2)
                     player.add_sprite(Sprite('running_animation', [
                     pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_1.png').convert_alpha(), (player_width, player_height)),
                     pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_2.png').convert_alpha(), (player_width, player_height)),
@@ -248,12 +257,16 @@ while not quit:
                     pygame.transform.scale(pygame.image.load('images/player/jump_animation/student_jump2.png').convert_alpha(), (player_width, player_height)),
                     pygame.transform.scale(pygame.image.load('images/player/jump_animation/student_jump3.png').convert_alpha(), (player_width, player_height))
                     ]))
-                    obstacle = Obstacle()
+                    player.add_sprite(Sprite("ducking_animation", [
+                    pygame.transform.scale(pygame.image.load('images/player/duck_animation/student_duck1.png').convert_alpha(), (player_width, player_height)),
+                    pygame.transform.scale(pygame.image.load('images/player/duck_animation/student_duck2.png').convert_alpha(), (player_width, player_height))
+                    ]))
+                    obstacle = Obstacle(73, 73, 10)
                     obstacles_group.empty()
                     obstacles_group.add(obstacle)
                     projectile = Projectile()
                     projectile_group.empty()
-                    obstacles_group.add([projectile])
+                    projectile_group.add(projectile)
                 elif event.key == K_n:
                     pygame.mixer.music.stop()
                     quit = True
