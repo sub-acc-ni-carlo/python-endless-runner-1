@@ -42,6 +42,11 @@ player.add_sprite(Sprite("jumping_animation", [
         pygame.transform.scale(pygame.image.load('images/player/jump_animation/student_jump3.png').convert_alpha(), (player_width, player_height))
     ]))
 
+player.add_sprite(Sprite("ducking_animation", [
+        pygame.transform.scale(pygame.image.load('images/player/duck_animation/student_duck1.png').convert_alpha(), (player_width, player_height)),
+        pygame.transform.scale(pygame.image.load('images/player/duck_animation/student_duck2.png').convert_alpha(), (player_width, player_height))
+    ]))
+
 # create the obstacle
 obstacles_group = pygame.sprite.Group()
 obstacle = Obstacle(73, 73, 10)
@@ -88,6 +93,18 @@ while not quit:
         # press key 'A' to walk forward
         if event.type == KEYDOWN and event.key == K_a:
             player.set_action('walk_backward')
+        
+        
+        # press key 'S' to duck
+        if event.type == KEYDOWN and event.key == K_s:
+            player.set_action('ducking')
+
+        # press key 'S' to duck
+        if event.type == KEYUP and event.key == K_s:
+            player.set_action('running')
+        
+        if event.type == KEYDOWN and event.key == K_p:
+            pause = not pause
             
     # loads the background
     background_manager(

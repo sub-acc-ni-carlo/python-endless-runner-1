@@ -22,9 +22,10 @@ class Player(pygame.sprite.Sprite):
     def draw(self):
         ''' draw the sprite based on the character action and index '''
 
-        # one instantiaion of jump and run animation.
+        # one instantiaion of animation(s).
         running_sprite = self.sprites['running_animation']['animation'][int(self.sprites['running_animation']['index'])]
         jumping_sprite = self.sprites["jumping_animation"]['animation'][int(self.sprites["jumping_animation"]["index"])]
+        ducking_sprite = self.sprites["ducking_animation"]['animation'][int(self.sprites["ducking_animation"]["index"])]
         
         if self.action == 'running':
             
@@ -50,6 +51,15 @@ class Player(pygame.sprite.Sprite):
                 self.x += 1
                 game.blit(running_sprite, (self.x, self.y))
                 
+        elif self.action == 'ducking':
+            if self.x - 1 <= 1:
+                self.x = 1
+            if self.invincibility_frame > 0:
+                self.invincibility_frame -= 1
+            if self.invincibility_frame % 10 == 0:
+                self.x -= 1
+                game.blit(ducking_sprite, (self.x, self.y))
+
         elif self.action == 'walk_backward':
             if self.x - 1 <= 1:
                 self.x = 1
@@ -83,6 +93,18 @@ class Player(pygame.sprite.Sprite):
 
             # update the mask for collision detection
             self.mask = pygame.mask.from_surface(self.sprites['running_animation']['animation'][int(self.sprites['running_animation']['index'])])
+        
+        elif self.action == 'ducking':
+            self.sprites['ducking_animation']['index'] += 0.05
+
+            if self.sprites['ducking_animation']['index'] >= len(self.sprites['ducking_animation']['animation']):
+                self.sprites['ducking_animation']['index'] = 0
+            
+            self.rect = self.sprites['ducking_animation']['animation'][int(self.sprites['ducking_animation']['index'])].get_rect()
+            self.rect.x = self.x - 5
+            self.rect.y = self.y - 5
+
+            self.mask = pygame.mask.from_surface(self.sprites['ducking_animation']['animation'][int(self.sprites['ducking_animation']['index'])])
             
         elif self.action == 'jumping' or self.action == 'landing':
             
@@ -125,3 +147,4 @@ class Player(pygame.sprite.Sprite):
     def set_action(self, action):
         if self.action not in ['jumping', 'landing']:
             self.action = action
+            print(self.action)
