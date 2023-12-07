@@ -59,8 +59,12 @@ class Projectile(pygame.sprite.Sprite):
         
     def reset(self):
         ''' assign a new image and reset back to original position '''
-        
+        self.image_name = ''
+        self.type = ''
         self.image = random.choice(self.projectile_images)
+        self.image_name = self.get_image_name()
+        self.type = 'book' if 'book' in self.image_name else 'red_horse_1'
+
         self.x = game_width
         self.y = random.randint(int(0.5 * game_height), int(0.9 * game_height))
 

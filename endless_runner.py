@@ -69,6 +69,7 @@ for i in range(8):
 
 
 # game loop
+score = 0
 clock = pygame.time.Clock()
 start_time = pygame.time.get_ticks()
 quit = False
@@ -113,7 +114,11 @@ while not quit:
         background_assets(pygame),      # images object
         sky                             # sky
     )
-    if score > 5:
+    current_time = pygame.time.get_ticks()
+    elapsed_time = (current_time - start_time) // 1000
+    total_score = elapsed_time + score
+    
+    if total_score > 5:
         projectile.draw()
         projectile.update()
     # draw the player
@@ -125,27 +130,22 @@ while not quit:
     # draw the obstacle
     obstacle.draw()
     
-    if score > 5 and obstacle.x in [0, 50, 150, 250, 350, 450, 750, 850]:
+    if total_score > 5 and obstacle.x in [0, 50, 150, 250, 350, 450, 750, 850]:
         projectile.draw()
         print('projectile created')
        
     # update the position of the obstacle
     obstacle.update()
     
-    #print(obstacle.x)
-    #reset the obstacle
+    #reset the projectile
     if projectile.x <= 0:
         projectile.reset()
         speed += 1
-    #reset the obstacle
+    #reset the obstacle 
     if obstacle.x <= 0:
         obstacle.reset()
         speed += 1
 
-    current_time = pygame.time.get_ticks()
-    elapsed_time = (current_time - start_time) // 1000  # Convert to seconds
-    score = elapsed_time
-    
     # check if player collides with the obstacle
     if pygame.sprite.spritecollide(player, obstacles_group, True, pygame.sprite.collide_mask):
         player.health -= 1
@@ -162,6 +162,7 @@ while not quit:
         # remove projectile and replace with a new one
         if projectile.type == 'book':
             player.health += 1
+            score += 100
         else:
             player.health -= 1
         projectile.type = ''
@@ -169,6 +170,8 @@ while not quit:
         projectile_group.remove(projectile)
         projectile = Projectile()
         projectile_group.add(projectile)    
+    
+  
     # display a heart per remaining health
     for life in range(player.health):
         heart_sprite = heart_sprites[int(heart_sprite_index)]
@@ -187,7 +190,7 @@ while not quit:
     # display the score
     black = (255, 255, 255)
     font = pygame.font.Font("PixelGameFont.ttf", 16)
-    text = font.render(f'SCORE: {score}', True, black)
+    text = font.render(f'SCORE: {total_score}', True, black)
     text_rect = text.get_rect()
     text_rect.center = (WINDOW_WIDTH - 50, 20)
     game.blit(text, text_rect)
