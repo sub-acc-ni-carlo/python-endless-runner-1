@@ -7,6 +7,7 @@ from player import Player
 from obstacle import Obstacle
 from projectile import Projectile
 from window import game
+from window import pause_music
 from config import WINDOW_HEIGHT, WINDOW_WIDTH, FPS
 from game_variables import score, speed
 from background_manager import background_manager
@@ -15,10 +16,11 @@ from sprite import Sprite
 # set the image for the sky
 sky = pygame.image.load('images/bg/sky.png').convert_alpha()
 num_bg_tiles = math.ceil(WINDOW_WIDTH / sky.get_width()) + 1
-
+biomes = ['day', 'sky'] * 6
+biome = 'day' 
 # for the parallax effect, determine how much each layer will scroll
 parallax = []
-for x in range(len(background_assets(pygame))):
+for x in range(len(background_assets(pygame,'day'))):
     parallax.append(0)
 
 # create the player
@@ -111,16 +113,21 @@ while not quit:
     background_manager(
         game,                           # pygame display
         parallax,                       # array of assets in the background
-        background_assets(pygame),      # images object
+        background_assets(pygame,biome),      # images object
         sky                             # sky
     )
     current_time = pygame.time.get_ticks()
     elapsed_time = (current_time - start_time) // 1000
     total_score = elapsed_time + score
     
+    #change biome
+    index = min(total_score // 100, len(biomes) - 1)
+    biome = biomes[index]
+    
     if total_score > 5:
         projectile.draw()
         projectile.update()
+        
     # draw the player
     player.draw()
     
@@ -132,7 +139,6 @@ while not quit:
     
     if total_score > 5 and obstacle.x in [0, 50, 150, 250, 350, 450, 750, 850]:
         projectile.draw()
-        print('projectile created')
        
     # update the position of the obstacle
     obstacle.update()
@@ -221,7 +227,7 @@ while not quit:
     # gameover
     gameover = player.health == 0
     while gameover and not quit:
-        
+        pause_music()
         # display game over message
         game_over_color = (0, 0, 0)
         pygame.draw.rect(game, game_over_color, (0, 50, WINDOW_WIDTH, 100))
@@ -240,6 +246,7 @@ while not quit:
             if event.type == KEYDOWN:
                 if event.key == K_y:
                     # reset the game
+                    pygame.mixer.music.play(-1)
                     gameover = False
                     speed = 3
                     score = 0
