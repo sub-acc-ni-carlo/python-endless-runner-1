@@ -6,7 +6,7 @@ from window import pygame
 class Player(pygame.sprite.Sprite): 
 
 
-    def __init__(self, x, y, width, height, jump_height=1.5):
+    def __init__(self, x, y, width, height, jump_height=2):
         
         pygame.sprite.Sprite.__init__(self)
         self.sprites = {}
@@ -24,8 +24,8 @@ class Player(pygame.sprite.Sprite):
 
         # one instantiaion of animation(s).
         running_sprite = self.sprites['running_animation']['animation'][int(self.sprites['running_animation']['index'])]
-        jumping_sprite = self.sprites["jumping_animation"]['animation'][int(self.sprites["jumping_animation"]["index"])]
-        ducking_sprite = self.sprites["ducking_animation"]['animation'][int(self.sprites["ducking_animation"]["index"])]
+        jumping_sprite = self.sprites['jumping_animation']['animation'][int(self.sprites['jumping_animation']["index"])]
+        ducking_sprite = self.sprites['ducking_animation']['animation'][int(self.sprites['ducking_animation']["index"])]
         
         if self.action == 'running':
             

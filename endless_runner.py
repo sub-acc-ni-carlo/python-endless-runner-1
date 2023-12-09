@@ -7,6 +7,7 @@ from player import Player
 from obstacle import Obstacle
 from projectile import Projectile
 from window import game
+from window import pause_music
 from config import WINDOW_HEIGHT, WINDOW_WIDTH, FPS
 from game_variables import score, speed
 from background_manager import background_manager
@@ -15,16 +16,17 @@ from sprite import Sprite
 # set the image for the sky
 sky = pygame.image.load('images/bg/sky.png').convert_alpha()
 num_bg_tiles = math.ceil(WINDOW_WIDTH / sky.get_width()) + 1
-
+biomes = ['day', 'sky'] * 6
+biome = 'day' 
 # for the parallax effect, determine how much each layer will scroll
 parallax = []
-for x in range(len(background_assets(pygame))):
+for x in range(len(background_assets(pygame,'day'))):
     parallax.append(0)
 
 # create the player
 player_width, player_height = 105, 105
 player_x_pos, player_y_pos = 25, WINDOW_HEIGHT - player_height
-player = Player(player_x_pos, player_y_pos, player_width, player_height, 1.7)
+player = Player(player_x_pos, player_y_pos, player_width, player_height, 2)
 player.add_sprite(Sprite("running_animation", [
         pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_1.png').convert_alpha(), (player_width, player_height)),
         pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_2.png').convert_alpha(), (player_width, player_height)),
@@ -69,6 +71,7 @@ for i in range(8):
 
 
 # game loop
+score = 0
 clock = pygame.time.Clock()
 start_time = pygame.time.get_ticks()
 quit = False
@@ -110,12 +113,21 @@ while not quit:
     background_manager(
         game,                           # pygame display
         parallax,                       # array of assets in the background
-        background_assets(pygame),      # images object
+        background_assets(pygame,biome),      # images object
         sky                             # sky
     )
-    if score > 3:
+    current_time = pygame.time.get_ticks()
+    elapsed_time = (current_time - start_time) // 1000
+    total_score = elapsed_time + score
+    
+    #change biome
+    index = min(total_score // 100, len(biomes) - 1)
+    biome = biomes[index]
+    
+    if total_score > 5:
         projectile.draw()
         projectile.update()
+        
     # draw the player
     player.draw()
     
@@ -125,23 +137,21 @@ while not quit:
     # draw the obstacle
     obstacle.draw()
     
-    if score >= 5 and obstacle.x in [0, 50, 150, 250]:
+    if total_score > 5 and obstacle.x in [0, 50, 150, 250, 350, 450, 750, 850]:
         projectile.draw()
        
     # update the position of the obstacle
     obstacle.update()
     
-    
-
-    #reset the obstacle
+    #reset the projectile
+    if projectile.x <= 0:
+        projectile.reset()
+        speed += 1
+    #reset the obstacle 
     if obstacle.x <= 0:
         obstacle.reset()
         speed += 1
 
-    current_time = pygame.time.get_ticks()
-    elapsed_time = (current_time - start_time) // 1000  # Convert to seconds
-    score = elapsed_time
-    
     # check if player collides with the obstacle
     if pygame.sprite.spritecollide(player, obstacles_group, True, pygame.sprite.collide_mask):
         player.health -= 1
@@ -153,13 +163,21 @@ while not quit:
         obstacles_group.add(obstacle)
     
     if pygame.sprite.spritecollide(player, projectile_group, True, pygame.sprite.collide_mask):
-        player.health -= 1
         player.invincibility_frame = 30
-        
+
         # remove projectile and replace with a new one
+        if projectile.type == 'book':
+            player.health += 1
+            score += 100
+        else:
+            player.health -= 1
+        projectile.type = ''
+        projectile.image_name = ''
         projectile_group.remove(projectile)
         projectile = Projectile()
         projectile_group.add(projectile)    
+    
+  
     # display a heart per remaining health
     for life in range(player.health):
         heart_sprite = heart_sprites[int(heart_sprite_index)]
@@ -178,7 +196,7 @@ while not quit:
     # display the score
     black = (255, 255, 255)
     font = pygame.font.Font("PixelGameFont.ttf", 16)
-    text = font.render(f'SCORE: {score}', True, black)
+    text = font.render(f'SCORE: {total_score}', True, black)
     text_rect = text.get_rect()
     text_rect.center = (WINDOW_WIDTH - 50, 20)
     game.blit(text, text_rect)
@@ -209,7 +227,7 @@ while not quit:
     # gameover
     gameover = player.health == 0
     while gameover and not quit:
-        
+        pause_music()
         # display game over message
         game_over_color = (0, 0, 0)
         pygame.draw.rect(game, game_over_color, (0, 50, WINDOW_WIDTH, 100))
@@ -228,10 +246,11 @@ while not quit:
             if event.type == KEYDOWN:
                 if event.key == K_y:
                     # reset the game
+                    pygame.mixer.music.play(-1)
                     gameover = False
                     speed = 3
                     score = 0
-                    player = Player(player_x_pos, player_y_pos, player_width, player_height, 1.6)
+                    player = Player(player_x_pos, player_y_pos, player_width, player_height, 2)
                     player.add_sprite(Sprite('running_animation', [
                     pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_1.png').convert_alpha(), (player_width, player_height)),
                     pygame.transform.scale(pygame.image.load('images/player/run_animation/sti_student_2.png').convert_alpha(), (player_width, player_height)),
@@ -248,12 +267,16 @@ while not quit:
                     pygame.transform.scale(pygame.image.load('images/player/jump_animation/student_jump2.png').convert_alpha(), (player_width, player_height)),
                     pygame.transform.scale(pygame.image.load('images/player/jump_animation/student_jump3.png').convert_alpha(), (player_width, player_height))
                     ]))
-                    obstacle = Obstacle()
+                    player.add_sprite(Sprite("ducking_animation", [
+                    pygame.transform.scale(pygame.image.load('images/player/duck_animation/student_duck1.png').convert_alpha(), (player_width, player_height)),
+                    pygame.transform.scale(pygame.image.load('images/player/duck_animation/student_duck2.png').convert_alpha(), (player_width, player_height))
+                    ]))
+                    obstacle = Obstacle(73, 73, 10)
                     obstacles_group.empty()
                     obstacles_group.add(obstacle)
                     projectile = Projectile()
                     projectile_group.empty()
-                    obstacles_group.add([projectile])
+                    projectile_group.add(projectile)
                 elif event.key == K_n:
                     pygame.mixer.music.stop()
                     quit = True
