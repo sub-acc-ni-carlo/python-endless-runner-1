@@ -12,7 +12,8 @@ pygame.mixer.music.play(-1)
 def pause_music():
     pygame.mixer.music.pause()
 
+
 # create the game window
 size = (WINDOW_WIDTH, WINDOW_HEIGHT)
 game = pygame.display.set_mode(size)
-pygame.display.set_caption('Endless Runner')
+pygame.display.set_caption('STI Run saga')
