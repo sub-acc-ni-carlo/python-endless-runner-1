@@ -138,17 +138,24 @@ while not quit:
         #change biome
         index = min(total_score // 100, len(biomes) - 1)
         biome = biomes[index]
+        projectile_timing = 0
         
         if total_score > 5:
             projectile.draw()
             projectile.update()
-            
+            projectile_timing = 5
+        
+        if projectile_timing == 5:
+            obstacle_new = Obstacle(73, 73, 10)
+            obstacles_group.add(obstacle)
+            projectile_timing = 5
+        
         # draw the player
         player.draw()
         
         # update the sprite and position of the player
         player.update()
-        
+        projectile.update()
         # draw the obstacle
         obstacle.draw()
         
@@ -173,6 +180,8 @@ while not quit:
             player.invincibility_frame = 30
             
             # remove obstacle and replace with a new one
+            obstacle.type = ''
+            obstacle.image_name = ''
             obstacles_group.remove(obstacle)
             obstacle = Obstacle(73, 73, 10)
             obstacles_group.add(obstacle)
