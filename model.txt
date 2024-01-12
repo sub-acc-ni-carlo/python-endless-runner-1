@@ -1,0 +1,25 @@
+----------------------
+Entities (Entity)    
+----------------------
+- character
+    - sprite
+    - movement
+    - collision
+----------------------
+- obstacles
+    - sprite
+    - movement
+    - collision
+----------------------
+- projectiles
+    -sprite
+    - movement
+    - collision
+----------------------
+----------------------
+Effects
+----------------------
+- gravity
+- shake
+
++ Collision - takes entities and and checks if the entities has collisions with each other

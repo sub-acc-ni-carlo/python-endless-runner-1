@@ -1,3 +1,3 @@
 # game variables
 score = 0
-speed = 3
+speed = 5

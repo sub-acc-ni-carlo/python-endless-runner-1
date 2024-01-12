@@ -8,17 +8,17 @@ import random
 
 class Obstacle(pygame.sprite.Sprite):
     
-    def __init__(self):
+    def __init__(self, width, height, speed):
         pygame.sprite.Sprite.__init__(self)
+        self.sprites = {}
+        self.width = width
+        self.height = height
         
         # load images used for the obstacles
         self.obstacle_images = []
-        for image_name in ['rock1', 'rock2', 'rock3', 'spikes']:
+        for image_name in ['television']:
             image = pygame.image.load(f'images/obstacles/{image_name}.png').convert_alpha()
-            scale = 50 / image.get_width()
-            new_width = image.get_width() * scale
-            new_height = image.get_height() * scale
-            image = pygame.transform.scale(image, (new_width, new_height))
+            image = pygame.transform.scale(image, (self.width, self.height))
             self.obstacle_images.append(image)
             
         # assign a random image
