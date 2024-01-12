@@ -143,8 +143,6 @@ while not quit:
         obstacle_new = Obstacle(73, 73, 10)
         obstacles_group.add(obstacle)
         projectile_timing = 5
-        projectile_timing = 5
-    
     if projectile_timing == 5:
         obstacle_new = Obstacle(73, 73, 10)
         obstacles_group.add(obstacle)
