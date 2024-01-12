@@ -129,20 +129,11 @@ while not quit:
         projectile.draw()
         projectile.update()
         
-    #change biome
-    index = min(total_score // 100, len(biomes) - 1)
-    biome = biomes[index]
-    projectile_timing = 0
     if total_score > 5:
         projectile.draw()
         projectile.update()
         projectile_timing = 5
     
-    
-    if projectile_timing == 5:
-        obstacle_new = Obstacle(73, 73, 10)
-        obstacles_group.add(obstacle)
-        projectile_timing = 5
     if projectile_timing == 5:
         obstacle_new = Obstacle(73, 73, 10)
         obstacles_group.add(obstacle)
