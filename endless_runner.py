@@ -136,7 +136,7 @@ while not quit:
         total_score = elapsed_time + score
         
         #change biome
-        index = min(total_score // 100, len(biomes) - 1)
+        index = min(total_score // 1000, len(biomes) - 1)
         biome = biomes[index]
         projectile_timing = 0
         
