@@ -19,12 +19,18 @@ font = pygame.font.SysFont('Georgia', 40, bold=True)
 # rendering the text from the created font (Goergia) .
 continue_text = font.render('Continue', True, 'white')
 start_game_text = font.render('Start Game', True, 'white')
-
+restart_game_text = font.render('Restart Game', True, 'white')
+exit_game_text = font.render('Exit Game', True, 'white')
 # creating buttons from a basic Rect class.
-start_game_button = pygame.Rect(WINDOW_WIDTH/2, 50, WINDOW_WIDTH/2, 100)
+start_game_button = pygame.Rect(WINDOW_WIDTH/4, 50, WINDOW_WIDTH/2, 100)
 continue_button = pygame.Rect(0, 50, WINDOW_WIDTH/2, 100)
+restart_button = pygame.Rect(WINDOW_WIDTH/2, 50, WINDOW_WIDTH/2, 100)
+exit_button = pygame.Rect(0, 50, WINDOW_WIDTH/2, 100)
 
-
+start_game_text_rect = start_game_text.get_rect(center=start_game_button.center)
+continue_text_rect = continue_text.get_rect(center=continue_button.center)
+restart_game_text_rect = restart_game_text.get_rect(center=restart_button.center)
+exit_text_rect = exit_game_text.get_rect(center=exit_button.center)
 
 # set the image for the sky
 sky = pygame.image.load('images/bg/sky.png').convert_alpha()
@@ -281,14 +287,24 @@ while not quit:
             text_rect.center = (WINDOW_WIDTH / 2, 100)
             game.blit(text, text_rect)
             
+            
+            game.fill((0, 0, 0))
+            pygame.draw.rect(game, (255, 0, 0), restart_button)
+            pygame.draw.rect(game, (0, 255, 0), exit_button)
+            game.blit(restart_game_text, restart_game_text_rect)
+            game.blit(exit_game_text, exit_text_rect)
+
+            pygame.display.flip()
+            
+            
             for event in pygame.event.get():
                 
-                if event.type == QUIT:
-                    quit = True
-                    
                 # get the player's input (Y or N)
-                if event.type == KEYDOWN:
-                    if event.key == K_y:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if exit_button.collidepoint(event.pos):
+                        pygame.mixer.music.stop()
+                        quit = True
+                    elif restart_button.collidepoint(event.pos):
                         # reset the game
                         pygame.mixer.music.play(-1)
                         gameover = False
@@ -320,10 +336,7 @@ while not quit:
                         obstacles_group.add(obstacle)
                         projectile = Projectile()
                         projectile_group.empty()
-                        projectile_group.add(projectile)
-                    elif event.key == K_n:
-                        pygame.mixer.music.stop()
-                        quit = True
+                        projectile_group.add(projectile)              
                         
             pygame.display.update()
 
@@ -358,14 +371,22 @@ while not quit:
         text_rect.center = (WINDOW_WIDTH / 2, 100)
         game.blit(text, text_rect)
 
+        game.fill((0, 0, 0))
+        pygame.draw.rect(game, (0, 255, 0), start_game_button)
+        game.blit(start_game_text, start_game_text_rect)
 
+        pygame.display.flip()
+        
         for event in pygame.event.get():
                 
             # get the player's input (Y or N)
             if event.type == KEYDOWN:
                 if event.key == K_p:
                     pause = not pause
-                    
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if start_game_button.collidepoint(event.pos):
+                    game_state = state[0]
+                
     pygame.display.update()
 
 
