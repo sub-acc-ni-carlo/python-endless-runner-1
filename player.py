@@ -147,4 +147,4 @@ class Player(pygame.sprite.Sprite):
     def set_action(self, action):
         if self.action not in ['jumping', 'landing']:
             self.action = action
-            print(self.action)
+            
