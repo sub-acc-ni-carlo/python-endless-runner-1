@@ -13,6 +13,19 @@ from game_variables import score, speed
 from background_manager import background_manager
 from sprite import Sprite
 
+# setting the font to georgia.
+font = pygame.font.SysFont('Georgia', 40, bold=True)
+
+# rendering the text from the created font (Goergia) .
+continue_text = font.render('Continue', True, 'white')
+start_game_text = font.render('Start Game', True, 'white')
+
+# creating buttons from a basic Rect class.
+start_game_button = pygame.Rect(WINDOW_WIDTH/2, 50, WINDOW_WIDTH/2, 100)
+continue_button = pygame.Rect(0, 50, WINDOW_WIDTH/2, 100)
+
+
+
 # set the image for the sky
 sky = pygame.image.load('images/bg/sky.png').convert_alpha()
 num_bg_tiles = math.ceil(WINDOW_WIDTH / sky.get_width()) + 1
@@ -227,23 +240,30 @@ while not quit:
                 
         pygame.display.update()
 
+        # while the game is in pause, the game will loop within this while loop.
         while pause:
 
-            pause_color = (0, 255, 0)
-            pygame.draw.rect(game, pause_color, (0, 50, WINDOW_WIDTH, 100))
-            font = pygame.font.Font(pygame.font.get_default_font(), 16)
-            text = font.render('Game is paused. Press P to continue...', True, black)
-            text_rect = text.get_rect()
-            text_rect.center = (WINDOW_WIDTH / 2, 100)
-            game.blit(text, text_rect)
 
+            for events in pygame.event.get():
 
-            for event in pygame.event.get():
-                    
-                # get the player's input (Y or N)
-                if event.type == KEYDOWN:
-                    if event.key == K_p:
+                # this checks when a mouse button is clicked.
+                if events.type == pygame.MOUSEBUTTONDOWN:
+
+                    """
+                            if the mouse click was in a specific location 
+                        in this example we are checking if the mouse 
+                        is in collision with the continue button 
+                        which is the rectangle
+                    """
+                    if continue_button.collidepoint(events.pos):
                         pause = not pause
+
+            pause_color = (0, 0, 0)
+
+            # drawing the rect and text
+            pygame.draw.rect(game, pause_color, continue_button)
+            text_rect.center = (WINDOW_WIDTH / 2, 100)
+            game.blit(continue_text, (continue_button.x+5, continue_button.y+5))
                         
             pygame.display.update()
 
